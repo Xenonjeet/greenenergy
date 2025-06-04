@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Green Energy OTP Login</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+</head>
+<body>
+  <h2>🔐 Green Energy OTP Login</h2>
+
+  <input type="text" id="phoneNumber" placeholder="+91xxxxxxxxxx" />
+  <div id="recaptcha-container"></div>
+  <button onclick="sendOTP()">Send OTP</button>
+
+  <br><br>
+  <input type="text" id="otp" placeholder="Enter OTP" />
+  <button onclick="verifyOTP()">Verify OTP</button>
+
+  <p id="message"></p>
+
+  <script>
+    // ✅ Your Firebase config from Firebase Console
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUwH9PiYYHu9waEHnpCqSqqALRaZTvDnw",
+      authDomain: "greenenergyapp-6572e.firebaseapp.com",
+      projectId: "greenenergyapp-6572e",
+      storageBucket: "greenenergyapp-6572e.firebasestorage.app",
+      messagingSenderId: "123261234241",
+      appId: "1:123261234241:web:751bc001c52b7582cd6ac0",
+      measurementId: "G-KMMBR8XJMZ"
+    };
+
+    // ✅ Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // ✅ Show Recaptcha
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'normal',
+      callback: function(response) {
+        // reCAPTCHA solved
+      }
+    });
+
+    // ✅ Send OTP
+    function sendOTP() {
+      const phone = document.getElementById("phoneNumber").value;
+      auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
+        .then(confirmationResult => {
+          window.confirmationResult = confirmationResult;
+          document.getElementById("message").innerText = "✅ OTP Sent!";
+        })
+        .catch(error => {
+          document.getElementById("message").innerText = "❌ " + error.message;
+        });
+    }
+
+    // ✅ Verify OTP
+    function verifyOTP() {
+      const otp = document.getElementById("otp").value;
+      window.confirmationResult.confirm(otp)
+        .then(result => {
+          const user = result.user;
+          document.getElementById("message").innerText = "🎉 Login successful!";
+          // TODO: Redirect to dashboard or show investment plans
+        })
+        .catch(error => {
+          document.getElementById("message").innerText = "❌ Incorrect OTP";
+        });
+    }
+  </script>
+</body>
+</html>
